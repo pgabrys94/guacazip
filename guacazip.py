@@ -294,7 +294,7 @@ def res():
 
 def cln():
     """
-    Funkcja usuwająca zawartość pliku archive/.skipfile
+    Funkcja usuwająca zawartość pliku archive/.skipfile oraz katalogi sesji odpowiadające tym UUID.
     Jeżeli w pliku znajduje się UUID, to uniemożliwi to rozpakowanie archiwum zawierającego takie UUID.
     Taki katalog UUID nie będzie także brany pod uwagę przy wykonywaniu archiwizacji - zostanie pominięty.
     :return:
@@ -306,7 +306,7 @@ def cln():
                 shutil.rmtree(os.path.join(recordings, uuid))
             skip.seek(0)
             skip.truncate()
-        print("Plik {} został wyczyszczony".format(skipfile))
+        print("Plik {} został wyczyszczony, sesje zostały usunięte.".format(skipfile))
         sys.exit()
     except Exception as error:
         print("Błąd: ", error)
