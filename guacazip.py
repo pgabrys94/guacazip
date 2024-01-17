@@ -207,10 +207,10 @@ def res():
                 width = 18
                 for i, x in enumerate(sorted(archives), start=1):
                     date_range = x.split("-", 1)[1].rstrip(".7z")
-                    formatted_start = datetime.datetime.strptime(date_range[0], "%Y%m%d").strftime("%Y-%m-%d")
-                    formatted_end = datetime.datetime.strptime(date_range[1], "%Y%m%d").strftime("%Y-%m-%d")
-                    formatted = ("[{}] - {:<{}} > {:<{}}"
-                                 .format(archives.index(x) + 1, formatted_start, width, formatted_end))
+                    formatted_start = datetime.datetime.strptime(date_range.split("-")[0], "%Y%m%d").strftime("%Y-%m-%d")
+                    formatted_end = datetime.datetime.strptime(date_range.split("-")[1], "%Y%m%d").strftime("%Y-%m-%d")
+                    formatted = ("[{}] - {} > {:<{}}"
+                                 .format(archives.index(x) + 1, formatted_start, formatted_end, width))
                     print("\n")
                     print(formatted, end="\n" if i % column == 0 else " ")
 
