@@ -190,18 +190,18 @@ def res():
                     data = skip.read().splitlines()
                 for zipfile in os.listdir(archive):
                     # odczytaj katalogi UUID z nierozpakowanego archiwum
-                    with SevenZipFile(os.path.join(archive, zipfile), "r") as zipped_archive:
-                        zipped_uuids = [item.filename.split("/")[1] for item in zipped_archive.list()
-                                        if len(item.filename.split("/")) == 2]
-                        if (                                    # Jeżeli:
-                                zipfile.startswith(username)    # nazwa pliku rozpoczyna się od nazwy użytkownika i
-                                and zipfile.endswith(".7z")     # rozszerzenie pliku to .7z i
-                                and zipfile.split(".")[0] not in archives   # nazwa pliku nie się nie powtarza i
-                                and not any(session in data      # żadne UUID nie jest w skipfile
-                                            for session in zipped_uuids)
-                        ):
-                            # przypisz archiwum do wyświetlanej listy archiwów
-                            archives.append(zipfile)
+                    if zipfile.endswith(".7z"):
+                        with SevenZipFile(os.path.join(archive, zipfile), "r") as zipped_archive:
+                            zipped_uuids = [item.filename.split("/")[1] for item in zipped_archive.list()
+                                            if len(item.filename.split("/")) == 2]
+                            if (                                    # Jeżeli:
+                                    zipfile.startswith(username)    # nazwa pliku rozpoczyna się od nazwy użytkownika i
+                                    and zipfile.split(".")[0] not in archives   # nazwa pliku nie się nie powtarza i
+                                    and not any(session in data      # żadne UUID nie jest w skipfile
+                                                for session in zipped_uuids)
+                            ):
+                                # przypisz archiwum do wyświetlanej listy archiwów
+                                archives.append(zipfile)
 
                 column = 3
                 width = 18
