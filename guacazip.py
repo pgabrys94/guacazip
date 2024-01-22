@@ -126,8 +126,6 @@ def arc():
                             os.remove(f"{target_dir}.7z")
                             break
 
-    end()
-
 
 def res():
     """
@@ -339,6 +337,7 @@ time.sleep(1)
 try:
     if len(sys.argv) == 2 and sys.argv[1] in params:
         params[sys.argv[1]]()
+        end()
     else:
         raise Exception("Nieprawidłowy parametr")
 except Exception as err:
