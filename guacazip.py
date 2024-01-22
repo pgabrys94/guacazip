@@ -126,6 +126,8 @@ def arc():
                             os.remove(f"{target_dir}.7z")
                             break
 
+    end()
+
 
 def res():
     """
