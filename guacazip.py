@@ -41,8 +41,7 @@ def arc():
             print("\nznaleziono {} nagrań sesji, pominięto {}".format(len(session_list,), popped))
             if len(session_list) == 0:
                 print("\nNIC DO ZROBIENIA")
-                time.sleep(1)
-                end()
+                sys.exit()
             else:
                 print("\nROZPOCZĘCIE PROCESU ARCHIWIZACJI...")
             time.sleep(1)
@@ -126,6 +125,7 @@ def arc():
                             print("BŁĄD ARCHIWIZACJI {}".format(target_dir))
                             os.remove(f"{target_dir}.7z")
                             break
+    print("### {} ###".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
 
 
 def res():
@@ -283,7 +283,7 @@ def res():
 
         try:
             if u_in.lower() == "q":
-                end()
+                sys.exit()
             elif u_in.isdigit() and int(u_in) in range(1, len(menu) + 1):
                 menu[list(menu)[int(u_in) - 1]]()
             else:
@@ -308,14 +308,9 @@ def cln():
             skip.seek(0)
             skip.truncate()
         print("Plik {} został wyczyszczony, sesje zostały usunięte.".format(skipfile))
-        end()
+        sys.exit()
     except Exception as error:
         print("Błąd: ", error)
-
-
-def end():
-    print("*** STOP {} ***\n".format(stamp))
-    sys.exit()
 
 
 recordings = r"/var/lib/guacamole/recordings"    # ścieżka do katalogu nagrań guacamole,
@@ -328,15 +323,13 @@ flist = [{                                       # parametry określające metod
     'id': FILTER_LZMA2, 'preset': PRESET_EXTREME
 }]
 params = {"arc": arc, "res": res, "cln": cln}
-stamp = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
 
 # kod wyświetlający parametry programu i umożliwiający korzystanie z nich
-print("*** START {} ***\n".format(stamp))
-print("\n### GUACAZIP ###")
-time.sleep(1)
-
 try:
     if len(sys.argv) == 2 and sys.argv[1] in params:
+        print("\n*** {} ***".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+        print("\n### GUACAZIP ###")
+        time.sleep(1)
         params[sys.argv[1]]()
     else:
         raise Exception("Nieprawidłowy parametr")
@@ -346,5 +339,3 @@ except Exception as err:
     print("\t'arc' archiwizuj obecną zawartość katalogu nagrań")
     print("\t'res' przywróć archiwum do katalogu nagrań (otwiera interfejs tekstowy)")
     print("\t'cln' wyczyść plik /var/lib/guacamole/archive/.skiparc")
-
-end()
