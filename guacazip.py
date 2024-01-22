@@ -76,7 +76,7 @@ def arc():
                 elif session_date > user_session_dates[username][0]:
                     user_session_dates[username][1] = session_date
 
-        print("ARCHIWIZACJA...")
+        print("ARCHIWIZACJA...\n")
 
         # tworzenie katalogu przed archiwizacją:
         for user in list(user_content):
@@ -107,11 +107,11 @@ def arc():
             while True:
                 pack(dir_name)
                 time.sleep(1)
-                print("\ntestowanie archiwum...")
+                print("testowanie archiwum...")
                 with SevenZipFile(f"{target_dir}.7z", "r") as test_archive:
                     if test_archive.test() and test_archive.testzip() is None:
                         print("test OK")
-                        print("czyszczenie...")
+                        print("czyszczenie...\n")
                         shutil.rmtree(target_dir)
                         break
                     else:
@@ -122,10 +122,11 @@ def arc():
                             os.remove(f"{target_dir}.7z")
                             continue
                         else:
-                            print("BŁĄD ARCHIWIZACJI {}".format(target_dir))
+                            print("BŁĄD ARCHIWIZACJI {}\n".format(target_dir))
                             os.remove(f"{target_dir}.7z")
                             break
-    print("### {} ###".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    print("\n{}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    print("{}".format("#" * 60))
 
 
 def res():
