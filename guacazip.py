@@ -41,6 +41,7 @@ def arc():
             print("\nznaleziono {} nagrań sesji, pominięto {}".format(len(session_list,), popped))
             if len(session_list) == 0:
                 print("\nNIC DO ZROBIENIA")
+                time.sleep(1)
                 end()
             else:
                 print("\nROZPOCZĘCIE PROCESU ARCHIWIZACJI...")
