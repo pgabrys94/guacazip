@@ -338,7 +338,6 @@ time.sleep(1)
 try:
     if len(sys.argv) == 2 and sys.argv[1] in params:
         params[sys.argv[1]]()
-        end()
     else:
         raise Exception("Nieprawidłowy parametr")
 except Exception as err:
@@ -347,3 +346,5 @@ except Exception as err:
     print("\t'arc' archiwizuj obecną zawartość katalogu nagrań")
     print("\t'res' przywróć archiwum do katalogu nagrań (otwiera interfejs tekstowy)")
     print("\t'cln' wyczyść plik /var/lib/guacamole/archive/.skiparc")
+
+end()
