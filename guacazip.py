@@ -125,6 +125,9 @@ def arc():
                             print("BŁĄD ARCHIWIZACJI {}\n".format(target_dir))
                             os.remove(f"{target_dir}.7z")
                             break
+    else:
+        print("Brak nagrań sesji.")
+
     print("\n{}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
     print("{}".format("#" * 60))
 
