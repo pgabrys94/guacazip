@@ -1,6 +1,6 @@
-# Autor: Paweł Gabryś, UŚ-DASIUS
+# Author: Paweł Gabryś, UŚ-DASIUS
 # Github: github.com/pgabrys94/guacazip
-# Wersja : v1.1
+# Version : v1.1
 
 import os
 import shutil
@@ -12,13 +12,13 @@ from py7zr import FILTER_LZMA2, SevenZipFile, PRESET_EXTREME
 
 def arc():
     """
-    Funkcja archiwizująca nagrania.
+    Recordings archiving function..
     :return:
     """
     def pack(t_dir):
         """
-        Pakowanie sesji do archiwum 7zip
-        :param t_dir: obiekt path-like
+        Packing session to 7zip archive.
+        :param t_dir: path-like object
         :return:
         """
         os.chdir(archive)
@@ -37,7 +37,7 @@ def arc():
     if len(os.listdir(recordings)) > 0:
         popped = 0
         with open(skipfile, "r") as skip:
-            #   Filtrowanie katalogu nagrań
+            #   Filtering recordings directory
             unfiltered_session_list = os.listdir(recordings)
             session_list = unfiltered_session_list[:]
             for session in unfiltered_session_list:
@@ -53,11 +53,11 @@ def arc():
                 print("\nROZPOCZĘCIE PROCESU ARCHIWIZACJI...")
             time.sleep(1)
 
-            # odczyt zawartości katalogu i przypisanie do słownika
+            # read directory content and assign it to proper dictionary
             for uuid in session_list:
                 full_content[uuid] = os.listdir(os.path.join(recordings, uuid))[0]
 
-        # konwersja słownika zawartości katalogu na słownik uuid sesji użytkownika
+        # convert content dictionary to user session uuid dictionary
         for uuid, session in full_content.items():
             username = session.split("-")[0]
             if username not in user_content:
@@ -70,7 +70,7 @@ def arc():
 
         time.sleep(2)
 
-        # określenie konwencji nazewniczej katalogów:
+        # define directory naming convention:
         for uuid, filename in full_content.items():
             username = filename.split("-")[0]
             session_date = filename.split("-")[1]
@@ -85,7 +85,7 @@ def arc():
 
         print("ARCHIWIZACJA...\n")
 
-        # tworzenie katalogu przed archiwizacją:
+        # create directory before packing:
         for user in list(user_content):
             earliest = user_session_dates[user][0]
             latest = user_session_dates[user][1]
@@ -94,7 +94,7 @@ def arc():
             print("tworzenie katalogu {}".format(dir_name))
             os.mkdir(target_dir)
 
-            # przenoszenie katalogów UUID do katalogu archiwum:
+            # move UUID directories to archive directory:
             if os.path.exists(skipfile):
                 with open(skipfile, "r") as skip:
                     for uuid in user_content[user]:
@@ -109,7 +109,7 @@ def arc():
                         print("przenoszenie sesji {}".format(uuid))
                         shutil.move(os.path.join(recordings, uuid), target_dir)
 
-            # archiwizacja LZMA2:
+            # LZMA2 packing:
             i = 5
             while True:
                 pack(dir_name)
@@ -141,18 +141,18 @@ def arc():
 
 def res():
     """
-    Funkcja przywracająca nagrania z archiwum.
+    Restore recordings from archive.
     :return:
     """
     def unpack(chosen_archive):
         """
-        Rozpakowywanie archiwum.
-        :param chosen_archive: String -> nazwa archiwum w lokalizacji /var/lib/guacamole/archive
+        Unpack archive.
+        :param chosen_archive: String -> archive name in directory /var/lib/guacamole/archive
         :return:
         """
         print("rozpakowywanie...")
         try:
-            # rozpakuj archiwum
+            # unpack archive
             archive_path = os.path.join(archive, chosen_archive)
             unzip_path = os.path.join(archive, chosen_archive.rstrip(".7z"))
             with SevenZipFile(archive_path, "r") as zipped_file:
@@ -160,13 +160,13 @@ def res():
             print("rozpakowano {}\ndo katalogu\n{}\n".format(chosen_archive, unzip_path))
             time.sleep(2)
 
-            # przenieś rozpakowane katalogi UUID do katalogu nagrań
+            # move unpacked UUID directories to recordings directory
             print("przenoszenie...")
             contents = os.listdir(unzip_path)
             with open(skipfile, "r+") as skip:
                 data = skip.read()
                 for content in contents:
-                    # jeżeli UUID nie znajduje się w skipfile, przenieś katalog UUID i dopisz go do skipfile
+                    # if skipfile does not contain UUID, move UUID directory and append it to skipfile
                     if content not in data:
                         shutil.move(os.path.join(unzip_path, content), recordings)
                         skip.seek(0, os.SEEK_END)
@@ -174,11 +174,11 @@ def res():
                         print("przeniesiono.")
                         time.sleep(1)
                     else:
-                        # jeżeli UUID jest w skipfile, nie przenoś i usuń rozpakowany katalog UUID
-                        # NIE POWINNO ZADZIAŁAĆ - zawartość archiwum jest sprawdzana PRZED jego rozpakowaniem.
+                        # if UUID is in skipfile, do not move it and delete unpacked UUID directory
+                        # IT SHOULD NOT BE TRIGGERED - archive content is checked BEFORE unpacking.
                         shutil.rmtree(os.path.join(unzip_path, content))
                         print("sesja {} obecna w .skiparc, pomijam...".format(content))
-            # usuń rozpakowany katalog (który powinien być pusty)
+            # delete unpacked directory (which should be empty by now)
             shutil.rmtree(unzip_path)
 
         except Exception as unzip_error:
@@ -186,13 +186,13 @@ def res():
 
     def choose_by_user():
         """
-        Menu wyboru archiwów względem nazwy użytkownika.
+        Archive choice menu based on username.
         :return:
         """
         def choose_user_archive(username):
             """
-            Wybranie archiwum do rozpakowania.
-            :param username: String -> nazwa użytkownika, któego dotyczy archiwum
+            Choosing archive to unpack.
+            :param username: String -> username related to archive
             :return:
             """
             try:
@@ -201,18 +201,18 @@ def res():
                 with open(skipfile, "r") as skip:
                     data = skip.read().splitlines()
                 for zipfile in os.listdir(archive):
-                    # odczytaj katalogi UUID z nierozpakowanego archiwum
+                    # read UUID directories from unpacked archive
                     if zipfile.endswith(".7z"):
                         with SevenZipFile(os.path.join(archive, zipfile), "r") as zipped_archive:
                             zipped_uuids = [item.filename.split("/")[1] for item in zipped_archive.list()
                                             if len(item.filename.split("/")) == 2]
-                            if (                                    # Jeżeli:
-                                    zipfile.startswith(username)    # nazwa pliku rozpoczyna się od nazwy użytkownika i
-                                    and zipfile.split(".")[0] not in archives   # nazwa pliku nie się nie powtarza i
-                                    and not any(session in data      # żadne UUID nie jest w skipfile
+                            if (                                    # IF:
+                                    zipfile.startswith(username)    # file name starts with username and
+                                    and zipfile.split(".")[0] not in archives   # file name does not repeat and
+                                    and not any(session in data      # none of UUID is in skipfile
                                                 for session in zipped_uuids)
                             ):
-                                # przypisz archiwum do wyświetlanej listy archiwów
+                                # assign archive to displayed archive list
                                 archives.append(zipfile)
 
                 column = 3
@@ -233,12 +233,12 @@ def res():
                 if not restore_choice.isdigit() and restore_choice not in range(1, len(archives) + 1):
                     print("spróbuj ponownie.")
                 else:
-                    # wywołanie funkcji rozpakowującej wybrane archiwum
+                    # executing function to unpack chosen archive
                     unpack(archives[int(restore_choice) - 1])
             except Exception as archive_menu_error:
                 print(archive_menu_error)
 
-        # odczyt użytkowników z nazw archiwów
+        # read usernames from archives list
         user_base = []
         for file in os.listdir(archive):
             if file.endswith(".7z") and len(file.split("-")) == 3:
@@ -255,7 +255,7 @@ def res():
                 for user in user_base:
                     print("[{}] - {}".format(user_base.index(user) + 1, user))
 
-                # menu wyboru użytkownika
+                # user choosing menu
                 print("\n[q] - powrót")
                 user_choice = input("Wybierz użytkownika - [enter] zatwierdza: ")
 
@@ -266,7 +266,7 @@ def res():
 
     def input_file_path():
         """
-        Pozwala ręcznie wprowadzić ścieżkę do wybranego archiwum.
+        Allows to manually input path to archive.
         :return:
         """
         path_input = input(r"\nWprowadź ścieżkę absolutną do archiwum: ")
@@ -284,7 +284,7 @@ def res():
         "Wpisz ścieżkę do pliku": input_file_path
     }
 
-    # menu główne
+    # main menu
     while True:
         for mpos in list(menu):
             print("[{}] - {}\n".format(list(menu).index(mpos) + 1, mpos))
@@ -306,9 +306,9 @@ def res():
 
 def cln():
     """
-    Funkcja usuwająca zawartość pliku archive/.skipfile oraz katalogi sesji odpowiadające tym UUID.
-    Jeżeli w pliku znajduje się UUID, to uniemożliwi to rozpakowanie archiwum zawierającego takie UUID.
-    Taki katalog UUID nie będzie także brany pod uwagę przy wykonywaniu archiwizacji - zostanie pominięty.
+    Function deleting archive/.skipfile content and session directories related UUID containe inside this file.
+    If UUID is placed inside this file, it will prevent unpacking of archive containing this UUID.
+    Also, directory named with this UUID will be skipped during archivization.
     :return:
     """
     try:
@@ -324,19 +324,19 @@ def cln():
         print("Błąd: ", error)
 
 
-recordings = r"/var/lib/guacamole/recordings"    # ścieżka do katalogu nagrań guacamole,
-archive = r"/var/lib/guacamole/archive"          # Ścieżka do archiwum nagrań,
-skipfile = os.path.join(archive, ".skiparc")     # Ścieżka do pliku przechowującego informacje o wypakowanych archiwach.
-full_content = {}                                # słownik zawartości katalogu nagrań (UUID:nazwa pliku sesji),
-user_content = {}                                # słownik sesji należących do użytkownika (login:[UUID]),
-user_session_dates = {}                          # słownik najstarszej i najnowszej sesji danego użytkownika,
-time_delta = "weeks=4"                           # minimalny czas po jakim sesja ma zostać poddana archiwizacji,
-flist = [{                                       # parametry określające metodę kompresji i jej preset,
+recordings = r"/var/lib/guacamole/recordings"    # path to guacamole recordings directory,
+archive = r"/var/lib/guacamole/archive"          # Recordings archive directory,
+skipfile = os.path.join(archive, ".skiparc")     # Path to file containing unpacked archives info (skipfile).
+full_content = {}                                # recordings dir content dictionary (UUID:session file name),
+user_content = {}                                # dictonary of sessions related to user (login:[UUID]),
+user_session_dates = {}                          # oldest-newest user session dictionary,
+time_delta = "weeks=4"                           # minimal session age before archivization,
+flist = [{                                       # compression and preset parameters,
     'id': FILTER_LZMA2, 'preset': PRESET_EXTREME
 }]
 params = {"arc": arc, "res": res, "cln": cln}
 
-# kod wyświetlający parametry programu i umożliwiający korzystanie z nich
+# printing program parameters
 try:
     if len(sys.argv) == 2 and sys.argv[1] in params:
         print("\n*** {} ***".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
