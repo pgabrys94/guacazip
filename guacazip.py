@@ -330,7 +330,7 @@ skipfile = os.path.join(archive, ".skiparc")     # Path to file containing unpac
 full_content = {}                                # recordings dir content dictionary (UUID:session file name),
 user_content = {}                                # dictonary of sessions related to user (login:[UUID]),
 user_session_dates = {}                          # oldest-newest user session dictionary,
-time_delta = "weeks=4"                           # minimal session age before archivization,
+time_delta = "weeks=4"                           # minimal session age before archivization in timedelta format,
 flist = [{                                       # compression and preset parameters,
     'id': FILTER_LZMA2, 'preset': PRESET_EXTREME
 }]
