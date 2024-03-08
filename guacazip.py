@@ -1,12 +1,12 @@
 # Autor: Paweł Gabryś, UŚ-DASIUS
 # Github: github.com/pgabrys94/guacazip
-# Wersja : v1.0
+# Wersja : v1.1
 
 import os
 import shutil
 import time
 import sys
-import datetime
+from datetime import datetime, timedelta
 from py7zr import FILTER_LZMA2, SevenZipFile, PRESET_EXTREME
 
 
@@ -30,12 +30,19 @@ def arc():
         else:
             print("folder archiwizacji pusty, pomijam...")
 
+
+    now = datetime.now()
+    unit, value = time_delta.split("=")
+
     if len(os.listdir(recordings)) > 0:
         popped = 0
         with open(skipfile, "r") as skip:
-            session_list = os.listdir(recordings)
-            for session in session_list:
-                if session in skip.read():
+            #   Filtrowanie katalogu nagrań
+            unfiltered_session_list = os.listdir(recordings)
+            session_list = unfiltered_session_list[:]
+            for session in unfiltered_session_list:
+                creation_time = datetime.fromtimestamp(os.path.getctime(os.path.join(recordings, session)))
+                if session in skip.read() or (now - creation_time) > timedelta(**{unit: int(value)}):
                     session_list.pop(session_list.index(session))
                     popped += 1
             print("\nznaleziono {} nagrań sesji, pominięto {}".format(len(session_list,), popped))
@@ -128,7 +135,7 @@ def arc():
     else:
         print("\nBrak nagrań sesji.")
 
-    print("\n{}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+    print("\n{}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
     print("\n{}".format("#" * 60))
 
 
@@ -215,8 +222,8 @@ def res():
                 else:
                     for i, x in enumerate(sorted(archives), start=1):
                         date_range = x.split("-", 1)[1].rstrip(".7z")
-                        formatted_start = datetime.datetime.strptime(date_range.split("-")[0], "%Y%m%d").strftime("%Y-%m-%d")
-                        formatted_end = datetime.datetime.strptime(date_range.split("-")[1], "%Y%m%d").strftime("%Y-%m-%d")
+                        formatted_start = datetime.strptime(date_range.split("-")[0], "%Y%m%d").strftime("%Y-%m-%d")
+                        formatted_end = datetime.strptime(date_range.split("-")[1], "%Y%m%d").strftime("%Y-%m-%d")
                         formatted = ("[{}] - {} > {:<{}}"
                                      .format(archives.index(x) + 1, formatted_start, formatted_end, width))
                         print("\n")
@@ -323,6 +330,7 @@ skipfile = os.path.join(archive, ".skiparc")     # Ścieżka do pliku przechowuj
 full_content = {}                                # słownik zawartości katalogu nagrań (UUID:nazwa pliku sesji),
 user_content = {}                                # słownik sesji należących do użytkownika (login:[UUID]),
 user_session_dates = {}                          # słownik najstarszej i najnowszej sesji danego użytkownika,
+time_delta = "weeks=4"                           # minimalny czas po jakim sesja ma zostać poddana archiwizacji,
 flist = [{                                       # parametry określające metodę kompresji i jej preset,
     'id': FILTER_LZMA2, 'preset': PRESET_EXTREME
 }]
@@ -331,7 +339,7 @@ params = {"arc": arc, "res": res, "cln": cln}
 # kod wyświetlający parametry programu i umożliwiający korzystanie z nich
 try:
     if len(sys.argv) == 2 and sys.argv[1] in params:
-        print("\n*** {} ***".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+        print("\n*** {} ***".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
         print("\n### GUACAZIP ###")
         time.sleep(1)
         params[sys.argv[1]]()
