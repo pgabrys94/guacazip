@@ -33,19 +33,19 @@ def arc():
 
     now = datetime.now()
     unit, value = time_delta.split("=")
+    recs = os.listdir(recordings)
 
-    if len(os.listdir(recordings)) > 0:
-        popped = 0
+    if len(recs) > 0:
         with open(skipfile, "r") as skip:
             #   Filtering recordings directory
-            unfiltered_session_list = os.listdir(recordings)
-            session_list = unfiltered_session_list[:]
+            unfiltered_session_list = recs
+            session_list = []
             for session in unfiltered_session_list:
                 creation_time = datetime.fromtimestamp(os.path.getctime(os.path.join(recordings, session)))
-                if session in skip.read() or (now - creation_time) > timedelta(**{unit: int(value)}):
-                    session_list.pop(session_list.index(session))
-                    popped += 1
-            print("\nznaleziono {} nagrań sesji, pominięto {}".format(len(session_list,), popped))
+                if session not in skip.read() or (now - creation_time) > timedelta(**{unit: int(value)}):
+                    session_list.append(session)
+            skipped = len(recs) - len(session_list)
+            print("\nznaleziono {} nagrań sesji, pominięto {}".format(len(session_list,), skipped))
             if len(session_list) == 0:
                 print("\nNIC DO ZROBIENIA")
                 sys.exit()
