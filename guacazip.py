@@ -171,8 +171,8 @@ def res():
                         shutil.move(os.path.join(unzip_path, content), recordings)
                         skip.seek(0, os.SEEK_END)
                         skip.write(content + "\n")
-                        print("przeniesiono.")
-                        time.sleep(1)
+                        print("przeniesiono {}".format(content))
+                        time.sleep(0.25)
                     else:
                         # if UUID is in skipfile, do not move it and delete unpacked UUID directory
                         # IT SHOULD NOT BE TRIGGERED - archive content is checked BEFORE unpacking.
