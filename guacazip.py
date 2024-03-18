@@ -42,7 +42,7 @@ def arc():
             session_list = []
             for session in unfiltered_session_list:
                 creation_time = datetime.fromtimestamp(os.path.getctime(os.path.join(recordings, session)))
-                if session not in skip.read() or (now - creation_time) > timedelta(**{unit: int(value)}):
+                if session not in skip.read() and (now - creation_time) > timedelta(**{unit: int(value)}):
                     session_list.append(session)
             skipped = len(recs) - len(session_list)
             print("\nznaleziono {} nagrań sesji, pominięto {}".format(len(session_list,), skipped))
