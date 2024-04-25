@@ -12,7 +12,7 @@ from py7zr import FILTER_LZMA2, SevenZipFile, PRESET_EXTREME
 
 def arc():
     """
-    Recordings archiving function..
+    Recordings archiving function.
     :return:
     """
     def pack(t_dir):
@@ -80,7 +80,7 @@ def arc():
             else:
                 if session_date < user_session_dates[username][0]:
                     user_session_dates[username][0] = session_date
-                elif session_date > user_session_dates[username][0]:
+                elif session_date > user_session_dates[username][1]:
                     user_session_dates[username][1] = session_date
 
         print("ARCHIWIZACJA...\n")
