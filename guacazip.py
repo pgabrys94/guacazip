@@ -1,6 +1,6 @@
 # Author: Paweł Gabryś, UŚ-DASIUS
 # Github: github.com/pgabrys94/guacazip
-# Version : v1.1
+# Version : v1.3
 
 import os
 import shutil
